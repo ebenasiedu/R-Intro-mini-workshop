@@ -33,15 +33,13 @@ Please copy, paste, and run the code below in your installed R studio.
 We'll briefly walk through what each line mean during the workshop :) 
 
 ``` r
-packages <- c("tidyverse", "tibble", "ggrepel", "corrplot", "readxl", "tibble", "ggpubr", 
-              "viridis", "ggsci", "reshape2", "pheatmap", "ComplexHeatmap", 
-              "patchwork", "emmeans","caret")
+packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
+              "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans", "caret", "randomForest", "xgboost")
 new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-all_packages <- c("tidyverse", "tibble", "ggrepel", "corrplot", "readxl", "tibble", "ggpubr", 
-              "viridis", "ggsci", "reshape2", "pheatmap", "ComplexHeatmap", 
-              "patchwork", "emmeans","caret")
+all_packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
+              "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans", "caret", "randomForest", "xgboost", ""mlbench")
 
 if(sum(!(all_packages %in% installed.packages()[, "Package"]))) {
   stop("Not all required packages are installed!")
