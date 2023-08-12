@@ -1,7 +1,6 @@
 # R-Intro-mini-workshop (August 19 - 20, 2023)
 Hello! Welcome to this introductory R mini-workshop. 
 
-
 ---------------------------------------------------------
 ## Installing R, R studio, and Packages
 Please follow the instructions below to install R, R studio, and some packages on your computer prior to the workshop
