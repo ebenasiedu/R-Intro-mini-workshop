@@ -1,9 +1,17 @@
-# R-Intro-mini-workshop
+# R-Intro-mini-workshop (August 19 - 20, 2023)
 Hello! Welcome to this introductory R mini-workshop. 
 
+---------------------------------------------------------
 ## Zoom Link
+We'll have two sessions per day (afternoon and evening sessions), 2-3 hrs per session.
+
 Please use this link to join the fun!
 
+**https://unm.zoom.us/j/2116510521**
+
+**Passcode: Dabs**
+
+---------------------------------------------------------
 ## Installing R, R studio, and Packages
 Please follow the instructions below to install R, R studio, and some packages on your computer prior to the workshop
 This will save us lots of time! 
@@ -25,7 +33,7 @@ Watch these videos for additional guidance:
  
  `Linux:` https://www.youtube.com/watch?v=HEDhbgOEm8o
 
-
+---------------------------------------------------------
 ## Install some packages
 
 Please copy, paste, and run the code below in your installed R studio.
