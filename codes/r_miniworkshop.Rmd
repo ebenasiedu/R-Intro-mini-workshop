@@ -1,0 +1,28 @@
+---
+title: "R Mini-workshop: August 5-6, 2023"
+author: ""
+output: html_document
+---
+
+
+## Machine Learning: the basics
+
+`Logistic regression:`
+`Decision Tree:`
+`Random forest:`
+`k nearest neighbour`
+`xgboost:`
+`neural network;`
+
+
+
+
+```{r ML basics}
+
+# Get our data
+df <- datasets::mtcars
+
+
+
+```
+
