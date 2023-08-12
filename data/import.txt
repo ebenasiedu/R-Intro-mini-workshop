@@ -1,6 +1,0 @@
-Name Age Gender Subject Grade
-John 18 Male Math 85
-Emma 19 Female Science 92
-Michael 17 Male English 78
-Sophia 18 Female Math 88
-William 19 Male Science 90
