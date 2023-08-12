@@ -3,8 +3,10 @@ Hello! Welcome to this introductory R mini-workshop.
 
 ---------------------------------------------------------
 ## Installing R, R studio, and Packages
-Please follow the instructions below to install R, R studio, and some packages on your computer prior to the workshop
+Please follow the instructions below to install R, R studio, and some packages on your computer prior to the workshop.
+
 This will save us lots of time! 
+
 Thank you
 
 Please follow these guidelines to install R and some packages on your machine.
