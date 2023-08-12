@@ -52,9 +52,9 @@ if(sum(!(all_packages %in% installed.packages()[, "Package"]))) {
 We'll have two sessions per day (afternoon and evening sessions), 2-3 hrs per session.
 
 ---------------------------------------------------------
-**Afternoon session: 8am - 10:30am (EST) or 12pm - 2:30pm (GMT)**
+**Afternoon session: 12pm - 2:30pm (GMT) or 8am - 10:30am (EST)**
 
-**Evening session: 12:30pm - 3pm (EST) or 4:30pm - 7pm (GMT)**
+**Evening session: 4:30pm - 7pm (GMT) 12:30pm - 3pm (EST)**
 
 ---------------------------------------------------------
 Please use this link to join the fun!
