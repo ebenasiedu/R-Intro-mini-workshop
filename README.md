@@ -1,4 +1,4 @@
-# R-Intro-mini-workshop (August 19 - 20, 2023)
+# R-Intro-mini-workshop (August 26 - 27, 2023)
 Hello! Welcome to this introductory R mini-workshop. 
 
 ---------------------------------------------------------
