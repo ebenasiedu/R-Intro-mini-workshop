@@ -5,13 +5,9 @@ Hello! Welcome to this introductory R mini-workshop.
 ## Installing R, R studio, and Packages
 Please follow the instructions below to install R, R studio, and some packages on your computer prior to the workshop.
 
-This will save us lots of time! 
+This will save us time during the workshop :)
 
 Thank you
-
-Please follow these guidelines to install R and some packages on your machine.
-
-This will save us time during the workshop :)
 
 1.  Download and install R from here: <https://cran.rstudio.com/>
 
