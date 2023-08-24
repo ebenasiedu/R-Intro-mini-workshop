@@ -31,12 +31,12 @@ Please copy, paste, and run the code below in your installed R studio.
 We'll briefly walk through what each line mean during the workshop :) 
 
 ``` r
-packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
+packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", "stringr",
               "ggcorrplot","viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans",  "mlbench")
 new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-all_packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
+all_packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr",  "stringr",
               "ggcorrplot", "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans", "mlbench")
 
 if(sum(!(all_packages %in% installed.packages()[, "Package"]))) {
