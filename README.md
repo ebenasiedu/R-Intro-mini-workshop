@@ -32,12 +32,12 @@ We'll briefly walk through what each line mean during the workshop :)
 
 ``` r
 packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
-              "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans",  "mlbench")
+              "ggcorrplot","viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans",  "mlbench")
 new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
 all_packages <- c("tidyverse", "tidymodels", "tibble", "ggrepel","corrplot", "readxl", "ggpubr", 
-              "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans", "mlbench")
+              "ggcorrplot", "viridis", "ggsci", "reshape2", "pheatmap", "patchwork", "emmeans", "mlbench")
 
 if(sum(!(all_packages %in% installed.packages()[, "Package"]))) {
   stop("Not all required packages are installed!")
