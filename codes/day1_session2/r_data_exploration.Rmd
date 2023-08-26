@@ -1,0 +1,168 @@
+---
+title: ""
+author: ""
+output: html_document
+---
+
+## Data exploration {.tabset}
+
+
+Operations to Learn:
+
+`select`: select specific columns of a data frame
+
+`filter`: extract a subset of rows from a data frame based on logical conditions
+
+`arrange`: reorder rows of a data frame
+
+`rename`: rename variables in a data frame
+
+`mutate`: add new variables/columns or transform existing variables
+
+`group_by` : groups data by column factors
+
+`summarise`: generate summary statistics of different variables in the data frame, possibly within strata
+
+
+### Manipulation
+
+We'll use the `dplyr` package to manipulate our data. `dplyr` and other packages are part of the `tidyverse` package.
+
+```{r data tidying}
+# Load the required package
+library(tidyverse)
+
+# Look at datasets available in R for practise
+data()
+
+df <- datasets::mtcars
+?mtcars
+
+## Select
+
+
+# Namespaces
+
+
+# now let's get data about the miles and transmission of the cars
+dplyr::select(df, c(mpg,am))
+
+?dplyr::select() # for help
+
+# what if we want to select more than one column:
+# Let's get data about the miles and transmission of the cars
+dplyr::select(df, mpg:am)   # approach 1
+
+dplyr::select(df, c(mpg, am, carb, disp)) # approach 3
+
+dplyr::select(df, contains("c"))
+
+
+## Filter
+# we want cars with more than 20 miles per gallon
+dplyr::filter(df, mpg > 20)
+
+
+# filtering by multiple commands
+
+dplyr::filter(df, vs == 0 & mpg > 20)  # for 'AND'
+
+
+dplyr::filter(df, vs != 0 & mpg > 20) # not 'vs == 0' and mpg > 20
+
+
+dplyr::filter(df, vs != 0 & (mpg > 20 | hp < 91)) # not 'vs == 0' and mpg > 20 OR hp < 91
+
+
+
+## Arrange
+# we want to order cars by weight in descending order
+dplyr::arrange(df, desc(wt))
+
+
+
+## Rename
+# we want rename the engine column name
+dplyr::rename(df, engine = vs)
+
+
+## mutate
+# we want to insert a new column showing the weight in kg instead of pounds
+dplyr::mutate(df, wt_kg = wt * 0.45, .after = wt)
+
+
+## group_by
+dplyr::summarise(df, mean(mpg))
+
+
+```
+
+
+Piping: the “pipe” is used to connect multiple operations together into a pipeline
+` %>% ` or `|>`
+
+`Windows:` Ctrl + Shift + M    `Mac:` Cmd + Shift + M
+
+```{r piping}
+# Usage
+
+df %>% dplyr::filter(...) %>% dplyr::select(...) %>% 
+  dplyr::mutate() %>% dplyr::group_by() %>% dplyr::summarise()
+
+
+```
+
+
+```{r data manipulation exercise}
+# Exercise: 
+# Jump to powerpoint
+
+
+```
+
+
+
+
+
+
+
+### Wrangling/Reshaping
+
+`separate ` `pivot_wider` `pivot_longer` `tibble` 
+
+```{r wrangling}
+
+####---Separate
+# separating a column into mmultiple colums
+df <- read.csv("flow_data.csv")  # read in data
+
+
+####---- Pivot longer
+df %>% pivot_longer(col=c(2:4), names_to = "Subject", values_to = c("Scores")) # OR
+df %>% pivot_longer(col=c(Math:Arts), names_to = "Subject", values_to = c("Scores"))
+
+
+####---- Pivot_wider
+df %>% pivot_wider(names_from = "Subject", values_from = "Scores")
+
+
+
+
+
+
+####---- Joining tables
+
+
+
+
+
+
+####---- Moving columns to rownames and vice versa
+
+
+
+
+```
+
+
+
