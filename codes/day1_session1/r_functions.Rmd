@@ -1,0 +1,134 @@
+---
+title: ""
+author: ""
+output: html_document
+---
+
+## Functions in R {.tabset}
+
+### In-built functions
+
+`function` is useful for repeated tasks.
+
+there are tons of functions in R
+
+```{r functions, message=FALSE, swarning=FALSE}
+# some very basic ones
+sum() mean() sd() lm() t.test() wilcox.test() aov() scale() print() abs() search() # etc
+
+
+
+
+
+
+
+
+
+
+
+# Finding out how to use a function
+#press F1 when the function pops up OR
+?mean()
+?t.test()
+
+```
+
+### Writing your own function
+
+```{r custom_functions, message=FALSE, swarning=FALSE}
+my_function <- function(argument){
+  
+    # do something
+}
+
+
+# Let's practice!  
+
+
+
+
+
+
+
+
+# We want to write a function to calculate the mean and tell us the answer in a message form
+# Example: 
+values <- c(9, 5, 6, 8, 1,3)
+
+# write function
+my_mean <- function(x){
+  a <- sum(x)
+  b <- length(x)
+  c <- a/b
+  print(paste0("The mean is ", c))
+}
+
+# use function
+my_mean(values)
+
+
+# Let's compare to the in-buit mean() function
+mean(values)
+
+
+
+# what if we want to round the answer to 5.33?
+
+
+
+
+
+
+
+
+# We can shorten the code too
+my_mean <- function(x){
+  c <- mean(sum(x)/length(x))
+  print(paste0("The mean is ", c))
+}
+
+
+
+
+# OR into just one line
+my_mean <- function(x){
+  print(paste0("The mean is ", mean(sum(x)/length(x))))
+}
+
+
+
+# You can integrate if/else, for loops and other functions in your function
+
+
+
+
+# Example: Go to powerpoint
+
+
+
+
+
+
+my_function <- function(x,y,operation){
+  if (operation == "addition"){a <- x+y
+  print(a)} else{print(paste0("sorry, I haven't been taught ", operation))}}
+
+
+
+
+# You can use functions for almost everything. It's not always mathematical!
+
+```
+
+### Some frequently used functions
+
+```{r some_functions, message=FALSE, swarning=FALSE}
+#--- Iterations or Loop functions
+
+
+
+
+#---- 
+
+
+```
