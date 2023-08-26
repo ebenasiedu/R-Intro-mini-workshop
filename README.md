@@ -1,6 +1,6 @@
 # R-Intro-mini-workshop (August 26 - 27, 2023)
 
-Access videos here: https://drive.google.com/drive/folders/1U3OeEH1yAkct97Jc0aRGJKxBqAzvK5jp?usp=drive_link 
+Access videos here: https://drive.google.com/drive/folders/1U3OeEH1yAkct97Jc0aRGJKxBqAzvK5jp?usp=sharing
 
 ---------------------------------------------------------
 ## Installing R, R studio, and Packages
