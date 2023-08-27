@@ -1,0 +1,171 @@
+---
+title: ""
+author: ""
+output: html_document
+---
+
+## Data visualization {.tabset}
+
+
+### ggplot syntax
+
+```{r ggplot syntax}
+# Load the required package
+library(tidyverse) # ggplot is part of tidyverse
+
+
+# ggplot(data, aesthetics, geometry) + customizations
+
+# aesthetics (aes): x and y variables, size, color, shape, etc
+
+# geometry (geom): histogram, barplot, boxplot, lineplot, scatter, area, 
+
+# customization: themes, fonts, manual colors, faceting, plots combo, texts. labels, ets
+
+```
+
+
+### Plotting a one-variable 
+
+```{r first-check before any plot/analyses}
+# Read in your data
+df <- read.csv("diabetes.csv")
+
+
+# take a quick look at your data
+head(df)    ## prints first few rows
+str(df)     ## tells you the struture of the data
+summary(df) ## gives a descriptive stat summary about your data
+
+
+# Any colums you don't need? Remove them
+df <- dplyr::select(df, -X)  # for just one column
+
+# this is the same as
+df <- df %>% dplyr::select(-X)  # using the pipe
+
+
+# check for missing data
+sum(is.na(df))  # total NA in your data
+which(is.na(df)) # which rows are they in
+
+
+#the package visdat() has a function that allows u to see the missing data
+library(visdat)
+vis_miss(df)  # a plot of missing data
+
+
+# now there are NAs, lets remove any row with the NA
+df <- df %>% drop_na()
+
+vis_miss(df)  # let's now
+
+
+
+# check categorical columns for any weird stuff
+str(df)
+
+unique(df$sex)  # checks for unique entries in the sex column
+unique(df$diabetes) # checks for unique entries in the sex column
+
+
+# the sex column has weird entries, we can rename them
+
+# Approach 1: with base R
+
+#syntax
+colname[colname == "weird thing"] <- "correct thing"
+
+df$sex[df$sex == c("Femal")] <- "F"
+
+
+
+# Approach 2: with gsub/sub
+?gsub
+
+# syntax
+colname <- gsub("weird thing", "correct thing", colname)
+
+df$sex <- gsub("Male","M", df$sex)
+
+df$sex <- gsub("Femal","F", df$sex)
+
+
+
+# save as new name for future use
+diabetes <- df 
+
+```
+
+
+
+Continuous one-variable: `geom_histogram` `geom_dotplot`  `geom_density`
+
+```{r one-variable continuos}
+# diabetes data
+ggplot(df, aes(x=weight)) 
+# why do we see a blank plot?
+
+# we can assign the plot to a variable
+p <- ggplot(df, aes(x=weight)) 
+
+
+# we should add geometry to the plot
+ggplot(df, aes(x=weight)) + geom_histogram()
+
+# same as
+p + geom_histogram()
+
+
+
+
+# try geom_density(), geom_dotplot
+
+```
+
+
+
+Discrete one-variable: `geom_bar` vs `geom_col`
+
+```{r, discrete one-variable}
+?geom_bar() # what does geom_bar do?
+
+
+# For a discrete one-variable, your x-axis variable must be a 'factor'
+
+# use the diamonds data
+?diamonds
+
+df <- diamonds
+
+ggplot(df,aes(x=clarity)) + geom_bar()
+
+```
+
+
+
+### Plotting a two-variable
+
+Continous x, continous y: `geom_point`  `geom_smooth` 
+
+```{r continous x, continous y}
+# Lets use the diamonds data. It has too many rows, let's use the first 1000
+df <- mtcars
+
+p <- ggplot(df, aes(mpg, hp))
+
+p + geom_point()
+
+p + geom_smooth()
+
+
+```
+
+
+```{r plots}
+p <- ggplot(df, aes(x=age, y=weight))
+
+p + geom_smooth()
+
+```
+
