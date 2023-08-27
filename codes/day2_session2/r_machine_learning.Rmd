@@ -1,0 +1,420 @@
+---
+title: ""
+author: ""
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(keras)
+library(mlbench)
+library(vip)
+library(visdat) # for plotting missingness in data
+library(mice)   # for imputation of missing values
+library(doParallel) # for parallel processing
+
+
+# Create a cluster object and then register: 
+cl <- makePSOCKcluster(2)
+registerDoParallel(cl)
+
+
+workdir <- "//pn.vai.org/projects/krawczyk/primary/Eben/Data/Lab_data_meta_analysis/metabo_ML/"
+
+# load(paste0(workdir, "ML.RData"))
+
+
+```
+
+## Machine Learning: the basics {.tabset}
+
+### Intro
+
+-   **Understand the Problem and Goals:** Clearly define your problem: Is it classification, regression, clustering, etc.?
+    Understand your data and the domain it represents.
+    Define what success looks like: How will you measure the performance of your model?
+
+-   **Data Preprocessing:** Handle missing values: Decide whether to impute, remove, or keep missing data.
+    Clean and transform data: Address outliers, normalize/standardize features, and handle categorical variables.
+    Feature Selection and Engineering:
+
+-   **Feature engneering or Selecting relevant features:** Remove irrelevant or redundant features that don't contribute much to the model.
+    Create new features if they can provide more information to the model.
+    Data Splitting:
+
+-   **Split data into training, validation, and test sets**: Use the training set to train your model, the validation set to tune hyperparameters, and the test set to evaluate the final performance.
+    Model Selection:
+
+-   **Choose appropriate algorithms based on your problem type and data characteristics:** Start with simpler models before trying complex ones.
+    Model Training:
+
+-   **Fit the chosen model to the training data:** Tune hyperparameters to optimize model performance on the validation set (e.g., using cross-validation).
+    Model Evaluation:
+
+-   **Evaluate your model on the test set using appropriate evaluation metrics (accuracy, precision, recall, F1-score, etc.):** Avoid overfitting by ensuring your model generalizes well to new, unseen data.
+    Iterate and Improve:
+
+-   **Analyze model errors and consider improving data quality, feature engineering, or selecting a different algorithm:** Refine your model and iterate based on the insights gained from evaluation.
+    Interpretability and Visualization:
+
+-   **Visualize and interpret your model's predictions:** Some algorithms are more interpretable than others.
+    Visualize data distributions, relationships, and model outputs to gain insights.
+    Documentation and Communication:
+
+
+### Logistic regression
+
+Useful for predicting and giving binary responses.
+Real life examples: `spam detection` `heart attack occurrence in patients` `fraudulent transactions`
+
+We are going to practise this with the mtcars data. We want the model to learn the data and do the following for us:
+- Tell us which features are relevant to determine the transmission type of the car
+- Predict the transmission type of a car for us
+
+
+```{r data prep}
+#df <- read.csv(file = "C:/Users/ebenezer.asiedu/Desktop/Grad_Sch/PhD/training/R-miniWorkshop/data/netflix_users.csv")
+
+## read data
+data(PimaIndiansDiabetes2)
+df <- PimaIndiansDiabetes2
+
+## explore data
+head(df)
+str(df)
+vis_miss(df)  # a plot of missing data
+sum(is.na(df))
+which(is.na(df))
+
+## Cleaning data
+# ---- the NA entries can be removed, imputed, replaced with 0, or replace with mean/mode/median of data; depending on the type of data. 
+# ---- in this case, we have a numerical data with NAs, so we can impute or remove. NOT REPLACE WITH O
+
+#--- remove NAs
+df <- df %>% drop_na()
+vis_miss(df) 
+
+## Set a data reference for your outcome
+levels(df$diabetes)
+df$diabetes <- factor(df$diabetes, levels = c("neg", "pos"))   # approach 1
+df$diabetes <- relevel(df$diabetes, ref="neg")
+
+## Plot data variable
+# boxplot
+df %>% pivot_longer(cols = c(1:8), names_to = "var") %>% 
+  ggplot(aes(x=var,y=value, fill=diabetes)) + geom_boxplot() +
+  facet_wrap(.~var, scales = "free") #+
+  #scale_y_continuous(trans = "log2")
+
+# density
+df %>% pivot_longer(cols = c(1:8), names_to = "var") %>% 
+  ggplot(aes(x=value, fill=diabetes)) + geom_density(alpha=0.2) +
+  facet_wrap(.~var, scales = "free") 
+
+# histogram
+df %>% pivot_longer(cols = c(1:8), names_to = "var") %>% 
+  ggplot(aes(x=value, fill=diabetes)) + geom_histogram() +
+  facet_wrap(.~var, scales = "free") #+
+  #scale_x_continuous(trans = "log2")
+
+``` 
+
+
+## Logistic regression
+
+```{r model setup}
+##### ----- SPLIT DATA
+df_split <- initial_split(df, prop=0.65, strata=diabetes)
+
+# Create training data
+df_train <- training(df_split)
+
+# Create training data
+df_test <- testing(df_split)
+
+## ----- MODELING
+##-----General steps for fitting model with tidymodels
+# 1: Call the model function. eg  logistic_reg(), rand_forest(), etc
+# 2: Set the engine. eg "glm", "ranger", "xgboost"
+# 3: set the mode: "classification", "regression"
+# 4: Fit the model; variable ~ . or variable ~ x + y + z ....
+
+## Putting it all together:
+df_lr <- logistic_reg() %>%       # model function
+  set_engine("glm") %>%           # call engine
+  set_mode("classification") %>%  # set mode
+  fit(diabetes~ ., data=df_train)        # fit model
+
+# Generate Summary Table
+tidy(df_lr, exponentiate=T)
+
+## Now we use the model for prediction
+df_pred <- predict(df_lr, new_data = df_test, type = "class")  # predict the class; pos or neg
+df_pred2 <- predict(df_lr, new_data = df_test, type = "prob") # predict probaility of being pos or neg 
+
+# Put results together for readability
+lr_results <- df_test %>% dplyr::select(diabetes) %>%
+  bind_cols(df_pred, df_pred2)
+
+### ------ MODEL EVALUATION
+# confusion matrix
+conf_mat(lr_results, truth = diabetes, estimate = .pred_class) %>% autoplot(type="heatmap")
+
+# accuracy
+accuracy(lr_results, truth = diabetes, estimate = .pred_class) 
+
+# Sensitivity: ratio between how much were correctly identified as positive to how much were actually positive.
+sens(lr_results, truth = diabetes,estimate = .pred_class)
+
+# Specificity: ratio between how much were correctly classified as negative to how much was actually negative
+specificity(lr_results,truth = diabetes, estimate = .pred_class)
+
+# Precision: ow much were correctly classified as positive out of all positives?
+precision(lr_results,truth = diabetes, estimate = .pred_class)
+
+##---- let's put all together
+a <- metric_set(accuracy, sens, spec, precision)
+a(lr_results,truth = diabetes, estimate = .pred_class)
+
+##----- ROC curves
+# ROC tells how much the model is capable of distinguishing between classes
+roc_auc(lr_results,truth = diabetes, estimate = .pred_neg) # we use the reference factor
+
+# ROC curve is plotted with Sensitivity (TPR) against the (1- Specificity) [FPR]. 
+# if curve is closer to diagonal line, model is bad, predictions are mere random guesses
+roc_curve(lr_results,truth = diabetes, estimate = .pred_neg) %>% autoplot()
+
+```
+
+
+### Scaling ML: working with Workflow
+
+```{r modeling with workflow}
+## read data
+data(PimaIndiansDiabetes2)
+df <- PimaIndiansDiabetes2 %>% drop_na()
+
+## explore data
+head(df)
+str(df)
+vis_miss(df)  # a plot of missing data
+#sum(is.na(df))
+#which(is.na(df))
+
+boxplot(df)
+
+# Split data
+df_split <- initial_split(df, prop=0.65, strata=diabetes)
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+# Validation set
+#---- k-fold cross validation
+v_folds <- vfold_cv(df_train, v = 10, repeats = 5, strata = diabetes)
+
+## --- Parts of the workflow
+# 1. Set a pre-processing recipe
+df_rec <- recipe(diabetes~., data=df_train) #%>% 
+  # step_naomit(everything(), skip = TRUE) #%>%          # omit all NAs in analysis
+  # step_novel(all_nominal(), -all_outcomes()) %>%       # converts nominal variables to factors
+  # step_log(all_numeric(), -all_outcomes()) %>%         # log transforms numerical colums
+  # step_normalize(all_numeric(), -all_outcomes()) %>%   # normalizes numerical columns (sd=1, mean=0)
+  # step_dummy(all_nominal(), -all_outcomes()) %>%       # convert factor column to numeric binary (0,1)
+  # step_zv(all_numeric(), -all_outcomes()) %>%          # removes any numeric variables that have zero variance
+  # step_corr(all_predictors(), threshold = 0.7, method = "spearman") # will remove predictor variables that have large correlations with other predictor variables
+  # 
+summary(df_rec)
+
+
+# 2. Specify models
+log_spec <- logistic_reg() %>%  # model type
+  set_engine(engine = "glm") %>%  # model engine
+  set_mode("classification") # model mode
+
+rf_spec <-  rand_forest(trees = 1000, mtry = 4, min_n = 10) %>% 
+  set_engine("ranger", importance = "impurity") %>% 
+  set_mode("classification")
+
+xgb_spec <- boost_tree() %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification") 
+
+knn_spec <- nearest_neighbor(neighbors = 4) %>% # we can adjust the number of neighbors 
+  set_engine("kknn") %>% 
+  set_mode("classification") 
+
+nnet_spec <- mlp() %>%
+  set_mode("classification") %>% 
+  set_engine("keras", verbose = 0) 
+
+
+# 3. Create workflows
+log_wflow <- workflow() %>% # use workflow function
+ add_recipe(df_rec) %>%   # use the new recipe
+ add_model(log_spec)   # add your model spec
+
+rf_wflow <- workflow() %>%
+ add_recipe(df_rec) %>% 
+ add_model(rf_spec) 
+
+xgb_wflow <- workflow() %>%
+ add_recipe(df_rec) %>% 
+ add_model(xgb_spec)
+
+knn_wflow <- workflow() %>%
+ add_recipe(df_rec) %>% 
+ add_model(knn_spec)
+
+nnet_wflow <- workflow() %>%
+ add_recipe(df_rec) %>% 
+ add_model(nnet_spec)
+
+
+# 4. Evaluate models
+log_res <-   log_wflow %>% fit_resamples(resamples = v_folds, 
+    metrics = metric_set(precision, accuracy,roc_auc, sens, spec),
+    control = control_resamples(save_pred = TRUE)) 
+
+log_res %>% collect_metrics(summarize = TRUE)  # collect metrics
+
+log_pred <- log_res %>% collect_predictions()   # collect prediction
+
+# confusion matrix
+log_pred %>% conf_mat(diabetes, .pred_class) %>% autoplot(type = "mosaic")
+log_pred %>% conf_mat(diabetes, .pred_class) %>% autoplot(type = "heatmap")
+
+# ROC Curve
+log_pred %>% group_by(id2) %>% roc_curve(diabetes, .pred_neg) %>% autoplot() 
+
+
+###--knn
+knn_res <-   knn_wflow %>% fit_resamples(resamples = v_folds, 
+    metrics = metric_set(precision, accuracy,roc_auc, sens, spec),
+    control = control_resamples(save_pred = TRUE)) 
+knn_res %>% collect_metrics(summarize = T)
+
+###--rf
+rf_res <-   rf_wflow %>% fit_resamples(resamples = v_folds, 
+     metrics = metric_set(precision, accuracy,roc_auc, sens, spec),
+     control = control_resamples(save_pred = TRUE)) 
+rf_res %>% collect_metrics(summarize = T)
+
+
+###--xgb
+xgb_res <-   xgb_wflow %>% fit_resamples(resamples = v_folds, 
+     metrics = metric_set(precision, accuracy,roc_auc, sens, spec),
+     control = control_resamples(save_pred = TRUE)) 
+xgb_res %>% collect_metrics(summarize = T)
+
+###--nnet
+nnet_res <-   nnet_wflow %>% fit_resamples(resamples = v_folds, 
+     metrics = metric_set(precision, accuracy,roc_auc, sens, spec),
+     control = control_resamples(save_pred = TRUE)) 
+nnet_res %>% collect_metrics(summarize = T)
+
+
+
+
+## ---- compare the models
+log_metrics <- log_res %>% collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Logistic Regression") # add the name of the model to every row
+
+rf_metrics <- rf_res %>% collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Random Forest")
+
+xgb_metrics <- xgb_res %>% collect_metrics(summarise = TRUE) %>%
+  mutate(model = "XGBoost")
+
+knn_metrics <- knn_res %>% collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Knn")
+
+nnet_metrics <- nnet_res %>% collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Neural Net")
+
+# create dataframe with all models
+model_compare <- bind_rows(log_metrics,rf_metrics, xgb_metrics, knn_metrics, nnet_metrics)
+
+# change data structure
+model_compare <- model_compare %>% select(model, .metric, mean) %>% 
+  pivot_wider(names_from = .metric, values_from = c(mean)) 
+
+# show mean F1-Score for every model
+model_compare %>% arrange(roc_auc) %>% mutate(model = fct_reorder(model, roc_auc)) %>% # order results
+  ggplot(aes(model, sens, fill=model)) +
+  geom_col() +  coord_flip() +
+  scale_fill_brewer(palette = "yellow") +
+   geom_text(size = 3, aes(label = round(roc_auc, 2), y = roc_auc + 0.08),
+     vjust = 1)
+
+# Plot all metric
+a <- bind_rows(log_metrics,rf_metrics, xgb_metrics, knn_metrics, nnet_metrics)
+a %>% select(model, .metric, mean) %>% 
+  ggplot(aes(model, mean, fill=model)) +
+  geom_col() + coord_flip() +
+  facet_wrap(.~.metric) +
+  scale_fill_brewer(palette = "yellow")
+  
+
+
+
+# 5. Fit best model for prediction
+last_fit <- last_fit(rf_wflow, 
+                        split = df_split,
+                        metrics = metric_set(precision, accuracy,roc_auc, sens, spec))
+
+
+#Show performance metrics
+last_fit %>% collect_metrics()
+
+
+## -- Evaluation plots for prediction on testing data
+# Confusion matrix
+last_fit %>%
+  collect_predictions() %>% 
+  conf_mat(diabetes, .pred_class) %>% 
+  autoplot(type = "heatmap")
+
+# ROC
+last_fit %>%
+  collect_predictions() %>% 
+  roc_curve(diabetes, .pred_neg) %>% 
+  autoplot()
+
+
+# Variable importance plot
+last_fit %>% 
+  pluck(".workflow", 1) %>%   
+  pull_workflow_fit() %>% 
+  vip(num_features = 10)
+
+```
+
+
+### Clustering
+
+```{r}
+
+
+```
+
+
+### Dimensionality Reduction
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+

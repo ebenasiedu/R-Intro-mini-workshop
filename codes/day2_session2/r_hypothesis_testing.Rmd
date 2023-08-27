@@ -1,0 +1,118 @@
+---
+title: ""
+author: ""
+output: html_document
+---
+
+## Hypothesis testing {.tabset}
+
+
+### One-sample t-tests
+
+Inspect your data
+
+```{r one-sample t-tests}
+# Load the required package
+library(tidyverse) # ggplot is part of tidyverse
+library(tidymodels)
+
+
+data <- read.csv("hypothesis_1.csv")
+
+# check structure and summary
+str(data)
+summary(data)
+
+
+# visualize the data
+a <- ggplot(df, aes(Weight, fill = Sex)) + geom_density(alpha = .5)
+
+b <- ggplot(df, aes(Sex,Weight, color = Sex)) + geom_jitter(size=5 ,width=.5)
+
+c <- ggplot(df, aes(Sex, Weight, fill = Sex)) + geom_boxplot()
+
+a /  (b + c)
+
+```
+
+
+
+
+
+
+One-sample t-test
+```{r t-test}
+# select only Female to work on
+df <- data %>% pivot_wider(names_from = "Sex", values_from = "Weight")
+
+
+
+
+# Testing approaches
+
+# Approach  1: base R t.test() function
+
+
+
+
+
+# Approach 2: linear modeling (lm) ......the best
+
+
+
+```
+
+
+```{r Case study 2}
+
+# Load the required package
+library(tidyverse) # ggplot is part of tidyverse
+library(tidymodels)
+
+
+# read in data
+
+
+
+# explore data
+str(data)
+summary(data)
+
+hist(data$Weight)
+
+
+
+
+# Visualize data
+ggplot(data, aes(Group, Weight, color=Group)) + 
+      geom_jitter(size=5, width=0.25, height=0) + 
+      scale_color_viridis_d()
+
+ggplot(data, aes(Group,Weight, fill= Group)) + 
+      geom_boxplot(outlier.shape=2, alpha=.5) + 
+      geom_jitter(size=2,width=0.25,height=0) +
+      scale_color_viridis_d() +  scale_fill_viridis_d() + facet_wrap(~Diet)
+
+
+
+# Fit a linear model
+fit <- lm(Weight~Group + Diet, data) 
+
+
+# Diagnostics
+
+## look for outliers
+plot(cooks.distance(fit))
+
+## QQplot
+re = data.frame(cbind(predict(object=fit), residuals(fit))); names(re) = c("predicted_vals", "residuals")
+re$std_residuals = re$residuals / sd(re$residuals)
+resid.p = qqplot(residuals(fit), ylab="Model Residuals", xlab="Theoretical Normal Quantiles")
+
+
+```
+
+
+
+
+
