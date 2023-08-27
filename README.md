@@ -47,19 +47,3 @@ if(sum(!(all_packages %in% installed.packages()[, "Package"]))) {
 
 
 ---------------------------------------------------------
-## Zoom Link
-We'll have two sessions per day (afternoon and evening sessions), 2-3 hrs per session.
-
----------------------------------------------------------
-**Afternoon session: 12pm - 2:30pm (GMT) or 8am - 10:30am (EST)**
-
-**Evening session: 4:30pm - 7pm (GMT) or 12:30pm - 3pm (EST)**
-
----------------------------------------------------------
-Please use this link to join the fun!
-
-https://unm.zoom.us/j/2116510521
-
-Passcode: Dabs
-
----------------------------------------------------------
